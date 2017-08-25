@@ -6,7 +6,7 @@
 //--------------------------------------------------------------------------------
 ofImageQualityType SequenceExport::quality = OF_IMAGE_QUALITY_HIGH;
 
-void SequenceExport::setQualty( ofImageQualityType _quality )
+void SequenceExport::setQuality( ofImageQualityType _quality )
 {
   quality = _quality;
 }
@@ -21,7 +21,7 @@ void ofxSequenceExport::setup( ofFbo* _fbo, string _outpath, string _format, ofI
   outpath           = _outpath;
   format            = _format;
   
-  SequenceExport::setQualty( _quality );
+  SequenceExport::setQuality( _quality );
   
   numQueFrames      = 0;
   numExportedFrames = 0;

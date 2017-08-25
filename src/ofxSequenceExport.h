@@ -22,7 +22,7 @@ class SequenceExport : public ofThread
   
 public:
   static ofImageQualityType quality;
-  static void setQualty( ofImageQualityType _quality );
+  static void setQuality( ofImageQualityType _quality );
   
   deque< QueImg > ques;
   int             numExportedFrames = 0;
