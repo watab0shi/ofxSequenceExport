@@ -123,3 +123,17 @@ void ofxSequenceExport::update()
     cout << "[ ofxSequenceExport ] export completed!" << endl;
   }
 }
+
+
+// drawProgressBar
+//------------------------------------------------------------
+void ofxSequenceExport::drawProgressBar()
+{
+  int w = ofGetWidth();
+  int h = ofGetHeight();
+  
+  ofSetColor( 160 );
+  ofDrawRectangle( 0, h, w, -6 );
+  ofSetColor( ( bComplete ) ? ofColor( 0, 200, 0 ) : ofColor( 200, 0, 0 ) );
+  ofDrawRectangle( 0, h, ofMap( numExportedFrames, 0, numQueFrames, 0, w, true ), -6 );
+}

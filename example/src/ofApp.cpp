@@ -70,10 +70,7 @@ void ofApp::draw()
   fbo.draw( 0, 0 );
   
   // progress bar
-  ofSetColor( 160 );
-  ofDrawRectangle( 0, HEIGHT, WIDTH, -6 );
-  ofSetColor( ( expo.isCompleted() ) ? ofColor( 0, 200, 0 ) : ofColor( 200, 0, 0 ) );
-  ofDrawRectangle( 0, HEIGHT, ofMap( numExp, 0, numQue, 0, WIDTH, true ), -6 );
+  expo.drawProgressBar();
   
   ofDrawBitmapStringHighlight( "'s' key : start, stop", 20, 40 );
 }

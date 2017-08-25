@@ -101,7 +101,7 @@ public:
   void stopQueue();
   
   void update();
-  
+  void drawProgressBar();
   
   int getNumExportedFrames()
   {
