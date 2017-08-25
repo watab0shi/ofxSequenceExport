@@ -27,7 +27,7 @@ void ofApp::setup()
   expo.setDuration( DURATION );
   
   ofSetWindowShape( WIDTH, HEIGHT );
-  ofSetFrameRate( 60 );
+  ofSetFrameRate( 30 );
   ofBackground( 0 );
 }
 
