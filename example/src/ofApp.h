@@ -16,8 +16,8 @@ public:
   
   void keyPressed( int _key );
   
-  const int         WIDTH    = 1280;
-  const int         HEIGHT   = 800;
+  const int         WIDTH    = 1920;
+  const int         HEIGHT   = 1080;
   const float       DURATION = 10.;
   
   ofxSequenceExport expo;
