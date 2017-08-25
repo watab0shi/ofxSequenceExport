@@ -1,6 +1,6 @@
 //
 // cd data/export
-// ffmpeg -framerate 30       -i %06d.png     -vcodec libx264     -pix_fmt yuv420p          -r 30        -y out.mov
+// ffmpeg -framerate 30       -i %06d.jpg     -vcodec libx264     -pix_fmt yuv420p          -r 30        -y out.mp4
 // ffmpeg -framerate [in_fps] -i [in_imgName] -vcodec [vid_codec] -pix_fmt [vid_pix_fotmat] -r [vid_fps] -y [output_file]
 //
 
