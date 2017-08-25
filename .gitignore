@@ -1,0 +1,22 @@
+.DS_Store
+.gitkeep
+
+example/bin/*
+
+# Mac
+config.make
+*.xcodeproj
+Makefile
+openFrameworks-Info.plist
+Project.xcconfig
+
+# Win
+*.sdf
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+icon.aps
+icon.rc
+obj/*
+*.vs
