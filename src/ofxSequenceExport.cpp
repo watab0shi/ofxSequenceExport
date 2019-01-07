@@ -1,5 +1,8 @@
 
 #include "ofxSequenceExport.h"
+#include "ofAppRunner.h"
+#include "ofGraphics.h"
+#include "ofMath.h"
 
 
 // SequenceExport [ static ]
@@ -15,7 +18,7 @@ void SequenceExport::setQuality( ofImageQualityType _quality )
 
 // setup
 //------------------------------------------------------------
-void ofxSequenceExport::setup( ofFbo* _fbo, string _outpath, string _format, ofImageQualityType _quality )
+void ofxSequenceExport::setup( ofFbo* _fbo, std::string _outpath, std::string _format, ofImageQualityType _quality )
 {
   fbo               = _fbo;
   outpath           = _outpath;
@@ -36,6 +39,9 @@ void ofxSequenceExport::setup( ofFbo* _fbo, string _outpath, string _format, ofI
   
   duration          = 0.;
   bUseDuration      = false;
+  
+  numFrames         = 0;
+  bUseNumFrames     = false;
 }
 
 
@@ -43,8 +49,19 @@ void ofxSequenceExport::setup( ofFbo* _fbo, string _outpath, string _format, ofI
 //------------------------------------------------------------
 void ofxSequenceExport::setDuration( float _duration )
 {
-  bUseDuration = true;
-  duration     = _duration;
+  bUseDuration  = true;
+  bUseNumFrames = false;
+  duration      = _duration;
+}
+
+
+// setNumFrames
+//------------------------------------------------------------
+void ofxSequenceExport::setNumFrames( int _num )
+{
+  bUseDuration  = false;
+  bUseNumFrames = true;
+  numFrames     = _num;
 }
 
 
@@ -99,7 +116,7 @@ void ofxSequenceExport::stopQueue()
   bAddQue = false;
   sTime   = ofGetElapsedTimef();
   
-  cout << "[ ofxSequenceExport ] stoped adding quque!" << endl;
+  ofLog() << "[ ofxSequenceExport ] stoped adding quque!";
 }
 
 
@@ -112,7 +129,11 @@ void ofxSequenceExport::update()
   elapsed = ofGetElapsedTimef() - sTime;
   last    = ofGetLastFrameTime();
   
-  if( bUseDuration && ( bAddQue && ( elapsed - last ) > duration ) ) stopQueue();
+  if( ( bUseDuration  && ( bAddQue && ( elapsed - last ) > duration ) ) ||
+      ( bUseNumFrames && ( bAddQue && getNumExportedFrames() == numFrames ) ) )
+  {
+    stopQueue();
+  }
   
   if( bAddQue ) addQue();
   
@@ -120,7 +141,7 @@ void ofxSequenceExport::update()
   {
     bComplete = true;
     
-    cout << "[ ofxSequenceExport ] export completed!" << endl;
+    ofLog() << "[ ofxSequenceExport ] export completed!";
   }
 }
 

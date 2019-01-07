@@ -5,7 +5,9 @@
 //
 #pragma once
 
-#include "ofMain.h"
+#include "ofThread.h"
+#include "ofImage.h"
+#include "ofFbo.h"
 
 
 // SequenceExport
@@ -14,25 +16,29 @@ class SequenceExport : public ofThread
 {
   struct QueImg
   {
-    string   fName;
-    ofPixels pixs;
+    std::string fName;
+    ofPixels    pixs;
     
-    QueImg( ofPixels _pixs, string _fileName ) : pixs( _pixs ), fName( _fileName ){}
+    QueImg( ofPixels _pixs, std::string _fileName )
+    : pixs( _pixs )
+    , fName( _fileName )
+    {
+    }
   };
   
 public:
   static ofImageQualityType quality;
   static void setQuality( ofImageQualityType _quality );
   
-  deque< QueImg > ques;
-  int             numExportedFrames = 0;
+  std::deque< QueImg > ques;
+  int                  numExportedFrames = 0;
   
   bool isRunning(){ return isThreadRunning(); }
   
   void start()
   {
     numExportedFrames = 0;
-    startThread( false );
+    startThread();
   }
   
   void stop()
@@ -71,8 +77,8 @@ class ofxSequenceExport
   ofFbo*             fbo;
   ofPixels           pixels;
   
-  string             outpath;
-  string             format;
+  std::string        outpath;
+  std::string        format;
   
   int                numQueFrames;
   int                numExportedFrames;
@@ -87,13 +93,16 @@ class ofxSequenceExport
   
   float              duration;
   bool               bUseDuration;
+  int                numFrames;
+  bool               bUseNumFrames;
   
   void addQue();
   
 public:
-  void setup( ofFbo* _fbo, string _outpath, string _format, ofImageQualityType _quality = OF_IMAGE_QUALITY_HIGH );
+  void setup( ofFbo* _fbo, std::string _outpath, std::string _format, ofImageQualityType _quality = OF_IMAGE_QUALITY_HIGH );
   
   void setDuration( float _duration );
+  void setNumFrames( int _num );
   
   void start();
   void stop();
