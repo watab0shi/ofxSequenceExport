@@ -130,7 +130,7 @@ void ofxSequenceExport::update()
   last    = ofGetLastFrameTime();
   
   if( ( bUseDuration  && ( bAddQue && ( elapsed - last ) > duration ) ) ||
-      ( bUseNumFrames && ( bAddQue && getNumExportedFrames() == numFrames ) ) )
+      ( bUseNumFrames && ( bAddQue && numQueFrames >= numFrames ) ) )
   {
     stopQueue();
   }
