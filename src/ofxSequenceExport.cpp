@@ -22,6 +22,8 @@ void ofxSequenceExport::setup( ofFbo* _fbo, std::string _outpath, std::string _f
 {
   fbo               = _fbo;
   outpath           = _outpath;
+  if( outpath.back() != '/' ) outpath += "/";
+  
   format            = _format;
   
   SequenceExport::setQuality( _quality );
@@ -100,8 +102,7 @@ void ofxSequenceExport::addQue()
   assert( outpath.length() > 0 );
   assert( format.length()  > 0 );
   
-  char fName[ 100 ];
-  sprintf( fName, "%s%.6i.%s", outpath.c_str(), numQueFrames, format.c_str() );
+  std::string fName = outpath + ofToString( numQueFrames, 6, '0' ) + "." + format;
   
   expos[ numQueFrames % NUM_THREADS ].ques.emplace_back( pixels, fName );
   
