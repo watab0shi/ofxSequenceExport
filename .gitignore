@@ -1,22 +1,29 @@
-.DS_Store
-.gitkeep
-
-example/bin/*
-
 # Mac
-config.make
-*.xcodeproj
-Makefile
-openFrameworks-Info.plist
+*.app
 Project.xcconfig
+*.xcodeproj/
+config.make
+*.plist
+Makefile
 
-# Win
+#Win
 *.sdf
 *.sln
+*.iobj
+*.ipdb
 *.vcxproj
 *.vcxproj.filters
 *.vcxproj.user
 icon.aps
 icon.rc
-obj/*
+obj/
 *.vs
+*.VC.db
+*.VC.opendb
+*.dll
+*.exe
+*.exp
+*.lib
+*.ilk
+*.pdb
+bin
