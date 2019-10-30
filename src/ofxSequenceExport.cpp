@@ -18,15 +18,15 @@ void SequenceExport::setQuality( ofImageQualityType _quality )
 
 // setup
 //------------------------------------------------------------
-void ofxSequenceExport::setup( ofFbo* _fbo, std::string _outpath, std::string _format, ofImageQualityType _quality )
+void ofxSequenceExport::setup( ofFbo* _fbo, std::string _outpath, std::string _ext, ofImageQualityType _quality )
 {
   fbo               = _fbo;
   outpath           = _outpath;
   if( outpath.back() != '/' ) outpath += "/";
   
-  format            = _format;
+  format            = _ext;
   
-  SequenceExport::setQuality( _quality );
+//  SequenceExport::setQuality( _quality );
   
   numQueFrames      = 0;
   numExportedFrames = 0;
@@ -97,14 +97,25 @@ void ofxSequenceExport::stop()
 //------------------------------------------------------------
 void ofxSequenceExport::addQue()
 {
-  fbo->readToPixels( pixels );
+//  fbo->readToPixels( pixels );
+  reader.readToPixels( *fbo, pixels );
   
   assert( outpath.length() > 0 );
   assert( format.length()  > 0 );
   
-  std::string fName = outpath + ofToString( numQueFrames, 6, '0' ) + "." + format;
+  std::string fName = outpath + ofToString( numQueFrames, 5, '0' ) + "." + format;
   
   expos[ numQueFrames % NUM_THREADS ].ques.emplace_back( pixels, fName );
+  
+  ++numQueFrames;
+}
+
+void ofxSequenceExport::addQue( std::string _outFilePath )
+{
+//  fbo->readToPixels( pixels );
+  reader.readToPixels( *fbo, pixels );
+  
+  expos[ numQueFrames % NUM_THREADS ].ques.emplace_back( pixels, _outFilePath );
   
   ++numQueFrames;
 }
@@ -137,6 +148,29 @@ void ofxSequenceExport::update()
   }
   
   if( bAddQue ) addQue();
+  
+  if( !bComplete && getNumExportedFrames() == numQueFrames )
+  {
+    bComplete = true;
+    
+    ofLog() << "[ ofxSequenceExport ] export completed!";
+  }
+}
+
+void ofxSequenceExport::update( std::string _outFilePath )
+{
+  if( !isRunning() ) return;
+  
+  elapsed = ofGetElapsedTimef() - sTime;
+  last    = ofGetLastFrameTime();
+  
+  if( ( bUseDuration  && ( bAddQue && ( elapsed - last ) > duration ) ) ||
+     ( bUseNumFrames && ( bAddQue && numQueFrames >= numFrames ) ) )
+  {
+    stopQueue();
+  }
+  
+  if( bAddQue ) addQue( _outFilePath );
   
   if( !bComplete && getNumExportedFrames() == numQueFrames )
   {

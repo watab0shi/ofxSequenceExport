@@ -8,6 +8,7 @@
 #include "ofThread.h"
 #include "ofImage.h"
 #include "ofFbo.h"
+#include "ofxFastFboReader.h"
 
 
 // SequenceExport
@@ -52,7 +53,8 @@ public:
     {
       if( !ques.empty() )
       {
-        ofSaveImage( ques.front().pixs, ques.front().fName, SequenceExport::quality );
+//        ofSaveImage( ques.front().pixs, ques.front().fName, SequenceExport::quality );
+        ofSaveImage( ques.front().pixs, ques.front().fName );
         ques.pop_front();
         
         if( lock() )
@@ -74,6 +76,7 @@ class ofxSequenceExport
 {
   SequenceExport     expos[ NUM_THREADS ];
   
+  ofxFastFboReader   reader;
   ofFbo*             fbo;
   ofPixels           pixels;
   
@@ -97,9 +100,10 @@ class ofxSequenceExport
   bool               bUseNumFrames;
   
   void addQue();
+  void addQue( std::string _outFilePath );
   
 public:
-  void setup( ofFbo* _fbo, std::string _outpath, std::string _format, ofImageQualityType _quality = OF_IMAGE_QUALITY_HIGH );
+  void setup( ofFbo* _fbo, std::string _outpath, std::string _ext, ofImageQualityType _quality = OF_IMAGE_QUALITY_HIGH );
   
   void setDuration( float _duration );
   void setNumFrames( int _num );
@@ -110,6 +114,7 @@ public:
   void stopQueue();
   
   void update();
+  void update( std::string _outFilePath );
   void drawProgressBar();
   
   int getNumExportedFrames()
