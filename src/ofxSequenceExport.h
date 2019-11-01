@@ -91,7 +91,8 @@ public:
   };
   
   void setup( std::shared_ptr< ofFbo > _fbo, std::string _dirPath = "", ExtType _ext = EXT_PNG, ofImageQualityType _quality = OF_IMAGE_QUALITY_BEST );
-  
+  void useFastFboReader( bool _b );
+
   void setDurationByTime( float _duration );
   void setDurationByFrame( int _num );
   
@@ -120,6 +121,7 @@ private:
   
   SequenceExport     expos[ NUM_THREADS ];
   
+  bool               bUseFastFboReader;
   ofxFastFboReader   reader;
   std::shared_ptr< ofFbo > fbo;
   ofPixels           pixels;

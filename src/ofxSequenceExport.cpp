@@ -52,6 +52,15 @@ void ofxSequenceExport::setup( std::shared_ptr< ofFbo > _fbo, std::string _dirPa
   
   numFrames         = 0;
   bUseNumFrames     = false;
+  bUseFastFboReader = false;
+}
+
+
+// useFastFboReader
+//------------------------------------------------------------
+void ofxSequenceExport::useFastFboReader( bool _b )
+{
+  bUseFastFboReader = _b;
 }
 
 
@@ -87,7 +96,10 @@ void ofxSequenceExport::start()
   bAddQue           = true;
   bRunning          = true;
   
-  reader.setAsync( false );
+  if( bUseFastFboReader )
+  {
+    reader.setAsync( false );
+  }
   
   for( auto& e : expos )
   {
@@ -115,8 +127,14 @@ void ofxSequenceExport::stop()
 //------------------------------------------------------------
 void ofxSequenceExport::addQue( std::string _outFilePath )
 {
-//  fbo->readToPixels( pixels );
-  reader.readToPixels( *fbo, pixels );
+  if( bUseFastFboReader )
+  {
+    reader.readToPixels( *fbo, pixels );
+  }
+  else
+  {
+    fbo->readToPixels( pixels );
+  }
   
   expos[ numQueFrames % NUM_THREADS ].ques.emplace_back( pixels, _outFilePath, ( ext == EXT_JPG ) );
   

@@ -34,6 +34,7 @@ void ofApp::setup()
   fbo->allocate( WIDTH, HEIGHT, GL_RGB );
   
   expo.setup( fbo, savePath );
+  expo.useFastFboReader( true );
 //  expo.setup( fbo, savePath, ofxSequenceExport::EXT_JPG, OF_IMAGE_QUALITY_BEST );
 //  expo.setDurationByTime( DURATION );
   expo.setDurationByFrame( 300 );
