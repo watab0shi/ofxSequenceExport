@@ -19,10 +19,12 @@ class SequenceExport : public ofThread
   {
     std::string fName;
     ofPixels    pixs;
+    bool        bJpg;
     
-    QueImg( ofPixels _pixs, std::string _fileName )
+    QueImg( ofPixels _pixs, std::string _fileName, bool _bJpg )
     : pixs( _pixs )
     , fName( _fileName )
+    , bJpg( _bJpg )
     {
     }
   };
@@ -51,17 +53,24 @@ public:
   {
     while( isThreadRunning() )
     {
-      if( !ques.empty() )
+      if( lock() )
       {
-//        ofSaveImage( ques.front().pixs, ques.front().fName, SequenceExport::quality );
-        ofSaveImage( ques.front().pixs, ques.front().fName );
-        ques.pop_front();
-        
-        if( lock() )
+        if( !ques.empty() )
         {
+          if( ques.front().bJpg )
+          {
+            ofSaveImage( ques.front().pixs, ques.front().fName, SequenceExport::quality );
+          }
+          else
+          {
+            ofSaveImage( ques.front().pixs, ques.front().fName );
+          }
+          ques.pop_front();
+          
           numExportedFrames++;
-          unlock();
         }
+        
+        unlock();
       }
     }
   }
@@ -74,13 +83,49 @@ const unsigned int NUM_THREADS = 6;
 //--------------------------------------------------------------------------------
 class ofxSequenceExport
 {
+public:
+  enum ExtType
+  {
+    EXT_JPG,
+    EXT_PNG
+  };
+  
+  void setup( std::shared_ptr< ofFbo > _fbo, std::string _dirPath = "", ExtType _ext = EXT_PNG, ofImageQualityType _quality = OF_IMAGE_QUALITY_BEST );
+  
+  void setDurationByTime( float _duration );
+  void setDurationByFrame( int _num );
+  
+  void start();
+  void stop();
+  
+  void stopQueue();
+  
+  void update( std::string _baseFileName = "" );
+  void drawProgressBar();
+  
+  int getNumExportedFrames()
+  {
+    numExportedFrames = 0;
+    for( auto& e : expos ) numExportedFrames += e.numExportedFrames;
+    
+    return numExportedFrames;
+  }
+  
+  int   getNumQueFrames(){ return numQueFrames; }
+  float getElapsedTime(){  return elapsed; }
+  bool  isRunning(){       return bRunning; }
+  bool  isCompleted(){     return bComplete; }
+  
+private:
+  
   SequenceExport     expos[ NUM_THREADS ];
   
   ofxFastFboReader   reader;
-  ofFbo*             fbo;
+  std::shared_ptr< ofFbo > fbo;
   ofPixels           pixels;
   
-  std::string        outpath;
+  std::string        dirPath;
+  ExtType            ext;
   std::string        format;
   
   int                numQueFrames;
@@ -99,34 +144,5 @@ class ofxSequenceExport
   int                numFrames;
   bool               bUseNumFrames;
   
-  void addQue();
   void addQue( std::string _outFilePath );
-  
-public:
-  void setup( ofFbo* _fbo, std::string _outpath, std::string _ext, ofImageQualityType _quality = OF_IMAGE_QUALITY_HIGH );
-  
-  void setDuration( float _duration );
-  void setNumFrames( int _num );
-  
-  void start();
-  void stop();
-  
-  void stopQueue();
-  
-  void update();
-  void update( std::string _outFilePath );
-  void drawProgressBar();
-  
-  int getNumExportedFrames()
-  {
-    numExportedFrames = 0;
-    for( auto& e : expos ) numExportedFrames += e.numExportedFrames;
-    
-    return numExportedFrames;
-  }
-  
-  int   getNumQueFrames(){ return numQueFrames; }
-  float getElapsedTime(){  return elapsed; }
-  bool  isRunning(){       return bRunning; }
-  bool  isCompleted(){     return bComplete; }
 };

@@ -16,12 +16,9 @@ public:
   
   void keyPressed( int _key );
   
-  const int         WIDTH    = 1280;
-  const int         HEIGHT   = 800;
-  const float       DURATION = 10.;
-  
   ofxSequenceExport expo;
-  ofFbo             fbo;
+  std::shared_ptr< ofFbo > fbo;
+  int               frame;
   int               numQue;
   int               numExp;
   string            savePath;

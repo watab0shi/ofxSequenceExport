@@ -7,24 +7,36 @@
 #include "ofApp.h"
 
 
+namespace
+{
+  const int   WIDTH    = 1920;
+  const int   HEIGHT   = 1080;
+  const float DURATION = 10.;
+  const int   FRAME    = 300;
+}
+
 // setup
 //------------------------------------------------------------
 void ofApp::setup()
 {
   numQue = 0;
   numExp = 0;
-  savePath = "export/";
+  frame  = 0;
+  savePath = "export";
   
   // clean up directory
   ofDirectory dir( savePath );
   dir.listDir();
-  vector< ofFile > fs = dir.getFiles();
+  std::vector< ofFile > fs = dir.getFiles();
   for( auto& f : fs ) f.remove();
   
-  fbo.allocate( WIDTH, HEIGHT, GL_RGB );
+  fbo = std::make_shared< ofFbo >();
+  fbo->allocate( WIDTH, HEIGHT, GL_RGB );
   
-  expo.setup( &fbo, savePath, "jpg", OF_IMAGE_QUALITY_HIGH );
-  expo.setDuration( DURATION );
+  expo.setup( fbo, savePath );
+//  expo.setup( fbo, savePath, ofxSequenceExport::EXT_JPG, OF_IMAGE_QUALITY_BEST );
+//  expo.setDurationByTime( DURATION );
+  expo.setDurationByFrame( 300 );
   
   ofSetWindowShape( WIDTH, HEIGHT );
   ofSetFrameRate( 30 );
@@ -40,7 +52,7 @@ void ofApp::update()
   numExp = expo.getNumExportedFrames();
   
   // draw in fbo
-  fbo.begin();
+  fbo->begin();
   {
     ofClear( 0, 255 );
     ofTranslate( WIDTH * .5, HEIGHT * .5 );
@@ -54,11 +66,17 @@ void ofApp::update()
     ofDrawBitmapStringHighlight( "exp / que : " + ofToString( numExp ) + " / " + ofToString( numQue ), 0, -20 );
     ofDrawBitmapStringHighlight( "elapsed   : " + ofToString( expo.getElapsedTime(), 3, 9, '0' ), 0, 20 );
     ofDrawBitmapStringHighlight( "last      : " + ofToString( ofGetLastFrameTime() ), 0, 40 );
+    ofDrawBitmapStringHighlight( "frame     : " + ofToString( frame ), 0, 60 );
   }
-  fbo.end();
+  fbo->end();
   
-  // call expo.update() after drawing fbo
-  expo.update();
+  // call expo.update( baseFileName ) after drawing fbo
+  expo.update( ofToString( frame, 5, '0' ) );
+  
+  if( expo.isRunning() )
+  {
+    ++frame;
+  }
 }
 
 
@@ -67,7 +85,7 @@ void ofApp::update()
 void ofApp::draw()
 {
   ofSetColor( 255 );
-  fbo.draw( 0, 0 );
+  fbo->draw( 0, 0 );
   
   // progress bar
   expo.drawProgressBar();
@@ -103,6 +121,10 @@ void ofApp::keyPressed( int _key )
 {
   if( _key == 's' )
   {
+    numQue = 0;
+    numExp = 0;
+    frame  = 0;
+    
     if( expo.isRunning() ) expo.stopQueue();
     else                   expo.start();
   }
