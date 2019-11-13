@@ -136,7 +136,11 @@ void ofxSequenceExport::addQue( std::string _outFilePath )
     fbo->readToPixels( pixels );
   }
   
-  expos[ numQueFrames % NUM_THREADS ].ques.emplace_back( pixels, _outFilePath, ( ext == EXT_JPG ) );
+  if( expos[ numQueFrames % NUM_THREADS ].lock() )
+  {
+    expos[ numQueFrames % NUM_THREADS ].ques.emplace_back( pixels, _outFilePath, ( ext == EXT_JPG ) );
+    expos[ numQueFrames % NUM_THREADS ].unlock();
+  }
   
   ++numQueFrames;
 }
